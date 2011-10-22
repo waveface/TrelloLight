@@ -15,7 +15,7 @@ TrelloLight (TrafficLight) will
 Install
 =======
 
-Download and install.
+[Download TrelloLight extension](http://dl.dropbox.com/u/2351896/TrelloLight.safariextz) and install in Safari.
 
 Development
 ===========

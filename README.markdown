@@ -14,6 +14,6 @@ A true develop team has culture; to us, it’s Scrum.  Trello doesn’t provide 
 
 # Using TrelloLight
 
-[Download TrelloLight extension](http://dl.dropbox.com/u/2351896/TrelloLight.safariextz) and install it.  Refresh [Trello](http://trello.com/).
+[Download TrelloLight extension](https://github.com/waveface/TrelloLight/downloads) and install it.  Refresh [Trello](http://trello.com/).
 
 To track your burned hours, you need to create a list named **Done** exactly and put all finished cards here.

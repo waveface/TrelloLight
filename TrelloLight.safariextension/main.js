@@ -2,10 +2,9 @@
 
 setTimeout(ScrumColorize, 2000);
 
-function CountHours(target){
+function CountHours(root){
 	var total = 0.0;
-	console.log(target);
-	$(target).each(function(){
+	$(root).find('h3.list-card-title a').each(function(){
 		var estimate = $(this).text().match(/\((\d*\.?\d*)H?\)/);
 		console.log($(this).text());
 		console.log(estimate);
@@ -23,18 +22,14 @@ function ScrumColorize(){
 var total = 0.0;
 var done = 0.0;
 
-total = CountHours('div.list h3.list-card-title a');
+
+total = CountHours($('div.list div.list-wrapper'));
 
 // Done
-$('div.list h2').each( function(){
+$('div.list div.list-wrapper').each( function(){
 	//console.log($(this).text().indexOf('Done'));
-	if( $(this).text().indexOf('Done') >= 0 ){
-		$(this).parent().parent().parent().find('h3.list-card-title a').each( function(){
-			var estimate = $(this).text().match(/\((\d*\.?\d*)H?\)/);
-			if( estimate != null){
-				done += parseFloat( estimate[1] );
-			}
-		})
+	if( $(this).find('h2').text().indexOf('Done') >= 0 ){
+		done = CountHours($(this));
 	}
 })
 

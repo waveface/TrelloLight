@@ -34,7 +34,8 @@ $('div.list div.list-wrapper').each( function(){
 
 var exclude = 0.0;
 $('div.list div.list-wrapper').each( function(){
-	if( $(this).find('h2').text().toLowerCase().indexOf('backlog') >= 0 ){
+	var title = $(this).find('h2').text().toLowerCase();
+	if( title.indexOf('backlog') >= 0 || title.indexOf('future') >=0 ){
 		exclude = CountHours($(this), '#222');
 	}
 })

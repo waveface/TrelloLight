@@ -1,0 +1,3 @@
+[submodule "TrelloLight.safariextension/external/jquery-mutation-events"]
+	path = TrelloLight.safariextension/external/jquery-mutation-events
+	url = git://github.com/jollytoad/jquery.mutation-events.git

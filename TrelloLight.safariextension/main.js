@@ -18,7 +18,7 @@ $(document).ready(function() {
 			
 			cssNoEstimationCardClass: "trello-light-unestimated-card",
 			cssIgnoredListClass: "trello-light-ignored-list",
-			cssDoneListClass: "trello-light-ignored-list",
+			cssDoneListClass: "trello-light-done-list",
 			cssTitleHUDClass: "trello-light-title-hud"
 		
 		};

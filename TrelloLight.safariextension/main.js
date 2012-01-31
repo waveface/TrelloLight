@@ -1,49 +1,179 @@
-$().ready(function() {
-	setTimeout(ScrumColorize, 2000);
-});
+$(document).ready(function() {
 
-function CountHours(root, color){
-	if( color === undefined ) {
-		color = '#ff284a'
+	TrelloLight = ((function () {
+		
+		return TrelloLight;
+		
+	})());
+	
+	function TrelloLight () {
+		
+		this.config = {
+		
+			ignoredListNames: ["Backlog"],
+			doneListNames: ["Done"],
+		
+			domEventsIgnoringCount: 0,
+			animatesBoardHUDTitleChange: false,
+			
+			cssNoEstimationCardClass: "trello-light-unestimated-card",
+			cssIgnoredListClass: "trello-light-ignored-list",
+			cssDoneListClass: "trello-light-ignored-list",
+			cssTitleHUDClass: "trello-light-title-hud"
+		
+		};
+		
 	}
-	var total = 0.0;
-	$(root).find('h3.list-card-title a').each(function(){
-		var estimate = $(this).text().match(/\((\d*\.?\d*)H?\)/);
-		console.log($(this).text());
-		if( estimate == null ){
-			$(this).css('color', color);
-		}else {
-			total += parseFloat(estimate[1]);
+	
+	TrelloLight.prototype.setUp = function () {
+	
+		var tlThis = this;
+
+		window.setInterval(function(){
+			tlThis.handleDOMSubtreeModified();
+		}, 1000);
+		
+		/*
+		$("body")[0].addEventListener('DOMSubTreeModified', function () {
+			tlThis.handleDOMSubtreeModified();
+		});
+		*/
+		
+		return this;
+		
+	};
+	
+	TrelloLight.prototype.beginIgnoringDOMSubtreeModifiedNotification = function () {
+		this.config.domEventsIgnoringCount++;
+	};
+	
+	TrelloLight.prototype.endIgnoringDOMSubtreeModifiedNotification = function () {
+		this.config.domEventsIgnoringCount--;
+	};
+	
+	TrelloLight.prototype.isIgnoringDOMSubtreeModifiedNotification = function () {
+		return !!(+(this.config.domEventsIgnoringCount));
+	};
+	
+	TrelloLight.prototype.handleDOMSubtreeModified = function () {
+	
+		//	Re-evaluate as the DOM is modified.  This is costly, but it’s all we can do right now
+		
+		if (this.isIgnoringDOMSubtreeModifiedNotification())
+			return;
+		
+		this.beginIgnoringDOMSubtreeModifiedNotification();		
+		
+		var tlThis = this;
+		var allHours = 0, doneHours = 0, ignoredHours = 0;
+	
+		$('div.list').each(function(){
+		
+			var listTitle = $(this).find('.list-title h2').text();
+			var listIgnored = tlThis.shouldIgnoreList(listTitle);
+			var listDone = tlThis.shouldConsiderItemsInListDone(listTitle);
+			
+			if (listIgnored) {
+				$(this).addClass(tlThis.config.cssIgnoredListClass);
+			} else {
+				$(this).removeClass(tlThis.config.cssIgnoredListClass);
+			}
+			
+			if (listDone) {
+				$(this).addClass(tlThis.config.cssDoneListClass);
+			} else {
+				$(this).removeClass(tlThis.config.cssDoneListClass);
+			}
+			
+			$(this).find('.list-card').each(function(){
+			
+				var cardTitle = $(this).find('h3.list-card-title a').text();
+				var cardEstimation = tlThis.estimationFromTitle(cardTitle);
+				
+				if (isNaN(cardEstimation)) {
+					
+					$(this).addClass(tlThis.config.cssNoEstimationCardClass);
+					
+				} else {
+				
+					if (!listIgnored) {
+				
+						allHours += cardEstimation;
+						
+						if (listDone)
+							doneHours += cardEstimation;
+					
+					} else {
+					
+						ignoredHours += cardEstimation;
+					
+					}
+					
+					$(this).removeClass(tlThis.config.cssNoEstimationCardClass);
+					
+				}
+				
+			});
+			
+		});
+		
+		var boardHUD = this.documentBoardHUD();
+		//	Probably boardHUD.attr("title", foo)
+		
+		var toBoardHUDText = " " + doneHours + " / " + allHours + (ignoredHours ? " + " + ignoredHours : "");
+		
+		if (this.config.animatesBoardHUDTitleChange) {
+		
+			if (boardHUD.text() != toBoardHUDText) {
+				this.beginIgnoringDOMSubtreeModifiedNotification();
+				boardHUD.fadeTo(100, 0).text(toBoardHUDText).delay(50).fadeTo(100, 1, function () {
+					window.setTimeout(function(){
+						tlThis.endIgnoringDOMSubtreeModifiedNotification();
+					}, 250);
+				});
+			}
+		
+		} else {
+		
+			boardHUD.text(toBoardHUDText);
+		
 		}
-	})
-	return total;
-}
+	
+		this.endIgnoringDOMSubtreeModifiedNotification();
+		
+	};
+	
+	TrelloLight.prototype.documentBoardHUD = function () {
+	
+		var boardTitle = $(".board-title h2");
+		var foundHUD = boardTitle.find("." + this.config.cssTitleHUDClass);
+		
+		if (!foundHUD.length) {
+			foundHUD = $("<span>").addClass(this.config.cssTitleHUDClass);
+			boardTitle.append(foundHUD);
+		}
+		
+		return foundHUD;
 
-function ScrumColorize(){
-
-var total = 0.0;
-
-total = CountHours($('div.list div.list-wrapper'));
-
-var done = 0.0;
-$('div.list div.list-wrapper').each( function(){
-	if( $(this).find('h2').text().toLowerCase().indexOf('done') >= 0 ){
-		done = CountHours($(this));
 	}
-})
-
-var exclude = 0.0;
-$('div.list div.list-wrapper').each( function(){
-	var title = $(this).find('h2').text().toLowerCase();
-	if( title.indexOf('backlog') >= 0 || title.indexOf('future') >=0 ){
-		exclude = CountHours($(this), '#222');
-	}
-})
-
-console.log(total + ', ' + done + ', ' + exclude);
-total -= exclude;
-total = Math.round(total*10)/10;
-remaining = Math.round(total*10-done*10)/10;
-$('.board-title h2').text( $('.board-title h2').text() + ': ' + remaining + '/' + total);
-};
-
+	
+	var nameMentioned = function (aName, anArray) {
+		return -1 != $.inArray(aName.toLowerCase(), $(anArray).map(function(idx, aName){ return aName.toLowerCase(); }));
+	};
+	
+	TrelloLight.prototype.shouldIgnoreList = function (aListName) {
+		return nameMentioned(aListName, this.config.ignoredListNames);
+	};
+	
+	TrelloLight.prototype.shouldConsiderItemsInListDone = function (aListName) {
+		return nameMentioned(aListName, this.config.doneListNames);
+	};
+	
+	TrelloLight.prototype.estimationFromTitle = function (aTitle) {
+		var matches = aTitle.match(/\((\d*\.?\d*)H?\)/);
+		return (matches && (matches.length > 1)) ? parseFloat(matches[1], 10) : NaN;
+	};
+	
+	window.trelloLight = (new TrelloLight()).setUp();
+	
+});

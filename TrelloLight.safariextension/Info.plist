@@ -31,6 +31,10 @@
 				<string>main.js</string>
 			</array>
 		</dict>
+		<key>Stylesheets</key>
+		<array>
+			<string>style.css</string>
+		</array>
 	</dict>
 	<key>Description</key>
 	<string>Makes Trello better fit into our Scrum process</string>

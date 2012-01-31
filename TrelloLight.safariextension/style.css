@@ -1,0 +1,18 @@
+.trello-light-unestimated-card h3 a {
+
+	color: rgb(192, 0, 0) !important;
+
+}
+
+.trello-light-ignored-list .trello-light-unestimated-card h3 a {
+
+	color: rgb(128, 0, 0) !important;
+
+}
+
+.trello-light-title-hud {
+
+	padding-left: 8px;
+	padding-right: 8px;
+
+}

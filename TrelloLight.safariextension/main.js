@@ -87,8 +87,10 @@ $(document).ready(function() {
 			
 			$(this).find('.list-card').each(function(){
 			
-				var cardTitle = $(this).find('h3.list-card-title a').text();
+				var cardTitle = $(this).find('.list-card-title').text();
 				var cardEstimation = tlThis.estimationFromTitle(cardTitle);
+				
+				console.log(cardTitle, cardEstimation);
 				
 				if (isNaN(cardEstimation)) {
 					
@@ -97,7 +99,7 @@ $(document).ready(function() {
 				} else {
 				
 					if (!listIgnored) {
-				
+					
 						allHours += cardEstimation;
 						
 						if (listDone)

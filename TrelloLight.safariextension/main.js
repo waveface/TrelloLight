@@ -90,6 +90,8 @@ $(document).ready(function() {
 				var cardTitle = $(this).find('.list-card-title').text();
 				var cardEstimation = tlThis.estimationFromTitle(cardTitle);
 				
+				var shouldCalculate = ($(this).css("display") != "none");
+				
 				console.log(cardTitle, cardEstimation);
 				
 				if (isNaN(cardEstimation)) {
@@ -99,11 +101,15 @@ $(document).ready(function() {
 				} else {
 				
 					if (!listIgnored) {
-					
-						allHours += cardEstimation;
 						
-						if (listDone)
-							doneHours += cardEstimation;
+						if (shouldCalculate) {
+							
+							allHours += cardEstimation;
+						
+							if (listDone)
+								doneHours += cardEstimation;
+							
+						}
 					
 					} else {
 					
